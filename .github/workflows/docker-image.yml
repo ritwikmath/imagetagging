@@ -12,11 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Read and set version
-        run: echo "VERSION=$(echo VERSION)" >> $GITHUB_ENV
+        run: |
+          VERSION=$(echo VERSION)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Build docker image with specific version
         run: docker build . --file Dockerfile --tag ronnie1993/myserver:${{ env.VERSION }}
       - name: Tag docker with latest keyword
-        run: docker tag ronnie1993/myserver:0.0.1 ronnie1993/myserver:latest
+        run: docker tag ronnie1993/myserver:${{ env.VERSION }} ronnie1993/myserver:latest
 
   push:
     runs-on: ubuntu-latest
