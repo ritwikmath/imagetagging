@@ -9,12 +9,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{steps.set-version.outputs.version}}
     steps:
       - uses: actions/checkout@v4
       - name: Read and set version
+        id: set-version
         run: |
           VERSION=$(echo VERSION)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Build docker image with specific version
         run: docker build . --file Dockerfile --tag ronnie1993/myserver:${{ env.VERSION }}
       - name: Tag docker with latest keyword
@@ -30,7 +34,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push docker image with version
-        run: docker push ronnie1993/myserver:${{ env.VERSION }}
+        run: docker push ronnie1993/myserver:${{ needs.build.outputs.version }}
       - name: Push docker image with latest tag
         run: docker push ronnie1993/myserver:latest
       
