@@ -1,0 +1,34 @@
+name: Docker image push
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read and set version
+        run: echo "VERSION=$(echo VERSION)" >> $GITHUB_ENV
+      - name: Build docker image with specific version
+        run: docker build . --file Dockerfile --tag ronnie1993/myserver:${{ env.VERSION }}
+      - name: Tag docker with latest keyword
+        run: docker tag ronnie1993/myserver:0.0.1 ronnie1993/myserver:latest
+
+  push:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Login to DockerHHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push docker image with version
+        run: docker push ronnie1993/myserver:${{ env.VERSION }}
+      - name: Push docker image with latest tag
+        run: docker push ronnie1993/myserver:latest
+      
