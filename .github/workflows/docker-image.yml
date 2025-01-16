@@ -16,7 +16,7 @@ jobs:
       - name: Read and set version
         id: set-version
         run: |
-          VERSION=$(echo VERSION)
+          VERSION=$(cat VERSION)
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Build docker image with specific version
