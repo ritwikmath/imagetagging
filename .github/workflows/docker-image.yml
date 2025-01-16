@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,9 +17,7 @@ jobs:
           VERSION=$(cat VERSION)
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
       - name: Build docker image with specific version
-        run: |
-          echo "${{ env.VERSION }}"
-          docker build . --file Dockerfile --tag ronnie1993/myserver:${{ env.VERSION }}
+        run: docker build . --file Dockerfile --tag ronnie1993/myserver:${{ env.VERSION }}
       - name: Tag docker with latest keyword
         run: docker tag ronnie1993/myserver:${{ env.VERSION }} ronnie1993/myserver:latest
       - name: Login to DockerHHub
@@ -28,9 +26,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push docker image with version
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags:  ronnie1993/myserver:${{ env.VERSION }}, ronnie1993/myserver:latest
+        run: docker push ronnie1993/myserver:${{ env.VERSION }}
+      - name: Push docker image with latest tag
+        run: docker push ronnie1993/myserver:latest
       

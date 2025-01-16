@@ -5,7 +5,7 @@ RUN apk update && \
 
 RUN mkdir -p /var/log/nginx
 
-WORKDIR /var
+WORKDIR /var/www/localhost/htdocs
 
 EXPOSE 80
 
